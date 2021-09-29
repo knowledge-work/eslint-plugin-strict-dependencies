@@ -1,5 +1,6 @@
 {
-  "name": "eslint-plugin-eslint-rules",
+  "name": "eslint-plugin-strict-dependencies",
+  "description": "Restrict imports between files according to the configured dependency rules.",
   "version": "0.0.1",
   "repository": {
     "type": "git",
