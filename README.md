@@ -1,0 +1,1 @@
+# eslint-plugin-strict-dependencies
