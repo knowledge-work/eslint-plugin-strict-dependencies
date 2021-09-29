@@ -1,5 +1,5 @@
 {
-  "name": "@kwork/eslint-plugin-eslint-rules",
+  "name": "eslint-plugin-eslint-rules",
   "version": "0.0.1",
   "repository": {
     "type": "git",
