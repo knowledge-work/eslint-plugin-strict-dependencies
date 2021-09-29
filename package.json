@@ -1,0 +1,14 @@
+{
+  "name": "@kwork/eslint-plugin-eslint-rules",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/knowledge-work/eslint-plugin-strict-dependencies.git"
+  },
+  "license": "MIT",
+  "main": "index.js",
+  "files": [
+    "strict-dependencies",
+    "index.js"
+  ]
+}
