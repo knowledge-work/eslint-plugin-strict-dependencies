@@ -1,6 +1,8 @@
 # eslint-plugin-strict-dependencies
 
-NOTE: eslint-plugin-strict-dependencies uses tsconfig, tsconfig.json must be present.
+ESlint plugin to define custom module dependency rules.
+
+NOTE: `eslint-plugin-strict-dependencies` uses tsconfig, tsconfig.json must be present.
 
 ## Installation
 
@@ -16,7 +18,7 @@ npm install eslint-plugin-strict-dependencies --save-dev
   - allowReferenceFrom: `string[]` (Glob or Forward matching string)
     - Paths of files where target module imports are allowed.
   - allowSameModule: `boolean`
-    - Whether or not the target module itself can import on the target module
+    - Whether it can be imported by other files in the same directory
 
 ## Usage
 
@@ -31,8 +33,8 @@ npm install eslint-plugin-strict-dependencies --save-dev
     "error",
     [
       /**
-       * example:
-       * Components only allow dependencies in the following directions
+       * Example:
+       * Limit the dependencies in the following directions
        * pages -> components/page -> components/ui
        */
       {
@@ -50,7 +52,7 @@ npm install eslint-plugin-strict-dependencies --save-dev
 
       /**
        * example:
-       * Don't import next/router directly, always import it through libs/router.
+       * Disallow to import `next/router` directly. it should always be imported using `libs/router.ts`.
        */
       {
         "module": "next/router",
