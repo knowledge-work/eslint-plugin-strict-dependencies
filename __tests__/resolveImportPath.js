@@ -9,19 +9,19 @@ describe('resolveImportPath', () => {
     // import Text from '../../components/ui/Text'
 
     readFileSync.mockReturnValue(JSON.stringify({}))
-    expect(resolveImportPath('../../components/ui/Text')).toBe('src/components/ui/Text')
+    expect(resolveImportPath('../../components/ui/Text', 'src/pages/aaa/bbb.ts')).toBe('src/components/ui/Text')
   })
 
   it('should do nothing if tsconfig.json does not exist', () => {
     readFileSync.mockImplementation(() => {
       throw new Error()
     })
-    expect(resolveImportPath('components/aaa/bbb')).toBe('components/aaa/bbb')
+    expect(resolveImportPath('components/aaa/bbb', 'src/pages/aaa/bbb.ts')).toBe('components/aaa/bbb')
   })
 
   it('should do nothing if no paths setting', () => {
     readFileSync.mockReturnValue(JSON.stringify({}))
-    expect(resolveImportPath('components/aaa/bbb')).toBe('components/aaa/bbb')
+    expect(resolveImportPath('components/aaa/bbb', 'src/pages/aaa/bbb.ts')).toBe('components/aaa/bbb')
   })
 
   it('should resolve tsconfig paths', () => {
@@ -33,8 +33,8 @@ describe('resolveImportPath', () => {
       },
     }))
 
-    expect(resolveImportPath('components/aaa/bbb')).toBe('components/aaa/bbb')
-    expect(resolveImportPath('@/components/aaa/bbb')).toBe('components/aaa/bbb')
+    expect(resolveImportPath('components/aaa/bbb', 'src/pages/aaa/bbb.ts')).toBe('components/aaa/bbb')
+    expect(resolveImportPath('@/components/aaa/bbb', 'src/pages/aaa/bbb.ts')).toBe('components/aaa/bbb')
   })
 
   describe('should resolve tsconfig paths with baseUrl', () => {
@@ -49,8 +49,8 @@ describe('resolveImportPath', () => {
           },
         }))
 
-        expect(resolveImportPath('components/aaa/bbb')).toBe('components/aaa/bbb')
-        expect(resolveImportPath('@/components/aaa/bbb')).toBe('src/components/aaa/bbb')
+        expect(resolveImportPath('components/aaa/bbb', 'src/pages/aaa/bbb.ts')).toBe('components/aaa/bbb')
+        expect(resolveImportPath('@/components/aaa/bbb', 'src/pages/aaa/bbb.ts')).toBe('src/components/aaa/bbb')
       })
     })
   })
