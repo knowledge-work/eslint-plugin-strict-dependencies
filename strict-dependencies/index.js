@@ -64,7 +64,7 @@ module.exports = {
             (dependency.allowSameModule && isMatch(relativeFilePath, dependency.module))
 
           if (!isAllowed) {
-            context.report(node, `import '${importPath}' is not allowed from ${dependency.module}.`)
+            context.report(node, `import '${importPath}' is not allowed from ${relativeFilePath}.`)
           }
         })
     }
