@@ -205,7 +205,7 @@ describe('create.ImportDeclaration', () => {
     expect(report).not.toBeCalled()
   })
 
-  it('should pass empty relativeFilePath value to resolveImportPath if resolveRelativeImport is false', () => {
+  it('should pass empty relativeFilePath value to resolveImportPath if resolveRelativeImport is falsy', () => {
     resolveImportPath.mockReturnValue('../components/ui/Text')
     const getFilename = jest.fn(() => path.join(process.cwd(), 'src/components/ui/aaa.ts'))
     const report = jest.fn()
