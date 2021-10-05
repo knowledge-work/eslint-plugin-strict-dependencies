@@ -2,5 +2,3 @@
 /.idea/
 /.vscode/
 /coverage/
-yarn.lock
-package-lock.json
