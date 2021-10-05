@@ -26,7 +26,7 @@ module.exports = (importPath, relativeFilePath) => {
     // DO NOTHING
   }
 
-  if (importPath.startsWith('./') || importPath.startsWith('../')) {
+  if (relativeFilePath && (importPath.startsWith('./') || importPath.startsWith('../'))) {
     importPath = path.join(path.dirname(relativeFilePath), importPath)
   }
 
