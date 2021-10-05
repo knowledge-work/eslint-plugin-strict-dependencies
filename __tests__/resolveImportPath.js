@@ -4,14 +4,6 @@ const {readFileSync} = require('fs')
 jest.mock('fs')
 
 describe('resolveImportPath', () => {
-  it('should resolve relative path', () => {
-    // > src/pages/aaa/bbb.ts
-    // import Text from '../../components/ui/Text'
-
-    readFileSync.mockReturnValue(JSON.stringify({}))
-    expect(resolveImportPath('../../components/ui/Text', 'src/pages/aaa/bbb.ts')).toBe('src/components/ui/Text')
-  })
-
   it('should do nothing if tsconfig.json does not exist', () => {
     readFileSync.mockImplementation(() => {
       throw new Error()

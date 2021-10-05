@@ -6,7 +6,7 @@ const path = require('path')
 /**
  * import文のrootからのパスを求める
  */
-module.exports = (importPath, relativeFilePath) => {
+module.exports = (importPath) => {
   // { [importAlias: string]: OriginalPath }
   const importAliasMap = {}
 
@@ -24,10 +24,6 @@ module.exports = (importPath, relativeFilePath) => {
     }
   } catch (e) {
     // DO NOTHING
-  }
-
-  if (importPath.startsWith('./') || importPath.startsWith('../')) {
-    importPath = path.join(path.dirname(relativeFilePath), importPath)
   }
 
   return Object.keys(importAliasMap).reduce((resolvedImportPath, key) => {

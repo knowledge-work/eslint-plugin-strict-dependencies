@@ -51,7 +51,7 @@ module.exports = {
     function checkImport(node) {
       const fileFullPath = context.getFilename()
       const relativeFilePath = path.relative(process.cwd(), fileFullPath)
-      const importPath = resolveImportPath(node.source.value, relativeFilePath)
+      const importPath = resolveImportPath(node.source.value)
 
       dependencies
         .filter((dependency) => isMatch(importPath, dependency.module))
