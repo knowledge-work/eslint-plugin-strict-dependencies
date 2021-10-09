@@ -32,17 +32,25 @@ describe('resolveImportPath', () => {
     expect(resolveImportPath('components/aaa/bbb', null)).toBe('components/aaa/bbb')
   })
 
-  it('should resolve tsconfig paths', () => {
-    readFileSync.mockReturnValue(JSON.stringify({
-      compilerOptions: {
-        paths: {
-          '@/components/': ['components/'],
-        },
-      },
-    }))
+  describe('should resolve tsconfig paths', () => {
+    [
+      ['@/components/', 'components/', 'components/aaa/bbb'],
+      ['@/components', 'components', 'components/aaa/bbb'],
+      ['@/components/*', 'components/*', 'components/aaa/bbb'],
+    ].forEach(([target, resolve, expected]) => {
+      it(`${target}: [${resolve}]`, () => {
+        readFileSync.mockReturnValue(JSON.stringify({
+          compilerOptions: {
+            paths: {
+              [target]: [resolve],
+            },
+          },
+        }))
 
-    expect(resolveImportPath('components/aaa/bbb', null)).toBe('components/aaa/bbb')
-    expect(resolveImportPath('@/components/aaa/bbb', null)).toBe('components/aaa/bbb')
+        expect(resolveImportPath('components/aaa/bbb', null)).toBe('components/aaa/bbb')
+        expect(resolveImportPath('@/components/aaa/bbb', null)).toBe(expected)
+      })
+    })
   })
 
   describe('should resolve tsconfig paths with baseUrl', () => {
