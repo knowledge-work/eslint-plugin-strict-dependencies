@@ -46,7 +46,15 @@ describe('resolveImportPath', () => {
   })
 
   describe('should resolve tsconfig paths with baseUrl', () => {
-    ['src', './src', 'src/'].forEach(baseUrl => {
+    [
+      ['.', 'components/aaa/bbb'],
+      ['./', 'components/aaa/bbb'],
+      ['../', '../components/aaa/bbb'],
+      ['src', 'src/components/aaa/bbb'],
+      ['./src', 'src/components/aaa/bbb'],
+      ['src/', 'src/components/aaa/bbb'],
+      ['./src/', 'src/components/aaa/bbb'],
+    ].forEach(([baseUrl, expected]) => {
       it(baseUrl, () => {
         readFileSync.mockReturnValue(JSON.stringify({
           compilerOptions: {
@@ -58,7 +66,7 @@ describe('resolveImportPath', () => {
         }))
 
         expect(resolveImportPath('components/aaa/bbb', null)).toBe('components/aaa/bbb')
-        expect(resolveImportPath('@/components/aaa/bbb', null)).toBe('src/components/aaa/bbb')
+        expect(resolveImportPath('@/components/aaa/bbb', null)).toBe(expected)
       })
     })
   })

@@ -19,7 +19,7 @@ module.exports = (importPath, relativeFilePath) => {
     if (tsConfig.compilerOptions && tsConfig.compilerOptions.paths) {
       Object.keys(tsConfig.compilerOptions.paths).forEach((key) => {
         // FIXME: このlint ruleではimport先が存在するかチェックしておらず、複数のパスから正しい方を選択できないため[0]固定
-        importAliasMap[key] = `${tsConfig.compilerOptions.baseUrl ? `${tsConfig.compilerOptions.baseUrl.replace(/^(\.\/)?(.+?)\/?$/, '$2')}/` : ''}${tsConfig.compilerOptions.paths[key][0]}`
+        importAliasMap[key] = tsConfig.compilerOptions.baseUrl ? path.join(tsConfig.compilerOptions.baseUrl, tsConfig.compilerOptions.paths[key][0]) : tsConfig.compilerOptions.paths[key][0]
       })
     }
   } catch (e) {
