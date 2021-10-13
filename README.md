@@ -20,6 +20,17 @@ npm install eslint-plugin-strict-dependencies --save-dev
   - allowSameModule: `boolean`
     - Whether it can be imported by other files in the same directory
 
+### Options
+
+- resolveRelativeImport: `boolean[default = false]`
+  - Whether to resolve relative import as in the following example
+  - `src/components/aaa.ts`
+   ```typescript
+   import bbb from './bbb';
+   ```
+     - `./bbb`: `resolveRelativeImport = false`
+     - `src/components/bbb`: `resolveRelativeImport = true`
+
 ## Usage
 
 .eslintrc:
@@ -60,7 +71,11 @@ npm install eslint-plugin-strict-dependencies --save-dev
         "allowSameModule": false
       },
     ],
-  ],
+    // options
+    // {
+    //   "resolveRelativeImport": true
+    // }
+  ]
 }
 
 ```

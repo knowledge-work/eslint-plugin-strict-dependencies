@@ -43,15 +43,25 @@ module.exports = {
           },
         ],
       },
+      {
+        type: 'object',
+        properties: {
+          resolveRelativeImport: {
+            type: 'boolean',
+          }
+        },
+      },
     ],
   },
   create: (context) => {
     const dependencies = context.options[0]
+    const options = context.options.length > 1 ? context.options[1] : {}
+    const resolveRelativeImport = options.resolveRelativeImport
 
     function checkImport(node) {
       const fileFullPath = context.getFilename()
       const relativeFilePath = path.relative(process.cwd(), fileFullPath)
-      const importPath = resolveImportPath(node.source.value)
+      const importPath = resolveImportPath(node.source.value, resolveRelativeImport ? relativeFilePath : null)
 
       dependencies
         .filter((dependency) => isMatch(importPath, dependency.module))
@@ -64,7 +74,7 @@ module.exports = {
             (dependency.allowSameModule && isMatch(relativeFilePath, dependency.module))
 
           if (!isAllowed) {
-            context.report(node, `import '${importPath}' is not allowed from ${dependency.module}.`)
+            context.report(node, `import '${importPath}' is not allowed from ${relativeFilePath}.`)
           }
         })
     }
