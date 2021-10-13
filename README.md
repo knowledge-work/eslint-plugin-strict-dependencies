@@ -25,11 +25,11 @@ npm install eslint-plugin-strict-dependencies --save-dev
 - resolveRelativeImport: `boolean[default = false]`
   - Whether to resolve relative import as in the following example
   - `src/components/aaa.ts`
-   ```typescript
-   import bbb from './bbb';
-   ```
-     - `./bbb`: `resolveRelativeImport = false`
-     - `src/components/bbb`: `resolveRelativeImport = true`
+    ```typescript
+    import bbb from './bbb';
+    ```
+     - `resolveRelativeImport = false`: Resolve as `./bbb` (excluded from lint target)
+     - `resolveRelativeImport = true`:  Resolve as `src/components/bbb`: (included from lint target)
 
 ## Usage
 
