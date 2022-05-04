@@ -24,11 +24,13 @@
     "strict-dependencies",
     "index.js"
   ],
-  "devDependencies": {
+  "dependencies": {
     "is-glob": "^4.0.3",
-    "jest": "^27.2.4",
     "micromatch": "^4.0.4",
     "require-strip-json-comments": "^2.0.0"
+  },
+  "devDependencies": {
+    "jest": "^27.2.4"
   },
   "scripts": {
     "test": "jest --coverage"
