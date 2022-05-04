@@ -1,7 +1,7 @@
 /* eslint-disable */
 
-const fs = require('fs')
 const path = require('path')
+const parseJSON = require('require-strip-json-comments')
 
 /**
  * import文のrootからのパスを求める
@@ -13,9 +13,9 @@ module.exports = (importPath, relativeFilePath) => {
   // Load tsconfig option
   // MEMO: tscとか使って簡単に読める方法がありそう
   try {
-    const tsConfigFile = fs.readFileSync(path.join(process.cwd(), '/tsconfig.json'), 'utf-8')
+    const tsConfigFilePath = path.join(process.cwd(), '/tsconfig.json')
     // Exists ts config
-    const tsConfig = JSON.parse(tsConfigFile)
+    const tsConfig = parseJSON(tsConfigFilePath)
     if (tsConfig.compilerOptions && tsConfig.compilerOptions.paths) {
       Object.keys(tsConfig.compilerOptions.paths).forEach((key) => {
         // FIXME: このlint ruleではimport先が存在するかチェックしておらず、複数のパスから正しい方を選択できないため[0]固定

@@ -1,12 +1,12 @@
 {
   "name": "eslint-plugin-strict-dependencies",
   "description": "ESlint plugin to define custom module dependency rules.",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/knowledge-work/eslint-plugin-strict-dependencies.git"
   },
-    "keywords": [
+  "keywords": [
     "eslint",
     "eslintplugin",
     "lint",
@@ -27,7 +27,8 @@
   "devDependencies": {
     "is-glob": "^4.0.3",
     "jest": "^27.2.4",
-    "micromatch": "^4.0.4"
+    "micromatch": "^4.0.4",
+    "require-strip-json-comments": "^2.0.0"
   },
   "scripts": {
     "test": "jest --coverage"
