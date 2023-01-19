@@ -2,6 +2,7 @@
 
 const path = require('path')
 const parseJSON = require('require-strip-json-comments')
+const normalize = require('normalize-path')
 
 /**
  * import文のrootからのパスを求める
@@ -30,8 +31,10 @@ module.exports = (importPath, relativeFilePath) => {
     importPath = path.join(path.dirname(relativeFilePath), importPath)
   }
 
-  return Object.keys(importAliasMap).reduce((resolvedImportPath, key) => {
+  const absolutePath = Object.keys(importAliasMap).reduce((resolvedImportPath, key) => {
     // FIXME: use glob module instead of replace('*')
     return resolvedImportPath.replace(key.replace('*', ''), importAliasMap[key].replace('*', ''))
   }, importPath)
+
+  return normalize(absolutePath)
 }
