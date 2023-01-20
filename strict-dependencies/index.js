@@ -3,6 +3,7 @@
 const path = require('path')
 const mm = require('micromatch')
 const isGlob = require('is-glob')
+const normalize = require('normalize-path')
 
 const resolveImportPath = require('./resolveImportPath')
 
@@ -60,7 +61,7 @@ module.exports = {
 
     function checkImport(node) {
       const fileFullPath = context.getFilename()
-      const relativeFilePath = path.relative(process.cwd(), fileFullPath)
+      const relativeFilePath = normalize(path.relative(process.cwd(), fileFullPath))
       const importPath = resolveImportPath(node.source.value, resolveRelativeImport ? relativeFilePath : null)
 
       dependencies

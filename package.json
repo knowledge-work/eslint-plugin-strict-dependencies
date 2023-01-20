@@ -27,6 +27,7 @@
   "dependencies": {
     "is-glob": "^4.0.3",
     "micromatch": "^4.0.4",
+    "normalize-path": "^3.0.0",
     "require-strip-json-comments": "^2.0.0"
   },
   "devDependencies": {
