@@ -34,6 +34,8 @@
     "jest": "^27.2.4"
   },
   "scripts": {
-    "test": "jest --coverage"
+    "test": "jest --coverage",
+    "preversion": "echo \"Run check for version $npm_package_version\" && yarn run check",
+    "postversion": "git push --tags && git push origin main && yarn publish ."
   }
 }
