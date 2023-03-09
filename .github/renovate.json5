@@ -1,0 +1,12 @@
+{
+  extends: [
+    'config:base',
+    ':disableRateLimiting',
+    ':maintainLockFilesWeekly',
+    ':automergeAll',
+    'group:nodeJs',
+    'helpers:pinGitHubActionDigests',
+  ],
+  timezone: 'Asia/Tokyo',
+  postUpdateOptions: ['yarnDedupeHighest'],
+}
