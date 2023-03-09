@@ -3,7 +3,7 @@ name: Publish
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 0 1 * *' # at AM 9 JST on day of month 1
+    - cron: '0 0 15 * *' # at AM 9 JST on day of month 15
 
 concurrency:
   group: ${{ github.workflow }}
