@@ -1,0 +1,46 @@
+name: Publish
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 1 * *' # at AM 9 JST on day of month 1
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
+      - uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3
+        with:
+          node-version-file: '.node-version'
+          cache: 'yarn'
+          registry-url: 'https://registry.npmjs.org'
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Bump version and publish
+        id: bump-version
+        run: |
+          git config user.name '[bot] github action (${{ github.workflow }})'
+          git config user.email 'engineer-team@knowledgework.com'
+          yarn version --patch
+          echo "new_version=$(jq -r .version package.json)" >> "$GITHUB_OUTPUT"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create release
+        uses: actions/github-script@98814c53be79b1d30f795b907e553d8679345975 # v6.4.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.repos.createRelease({
+              owner: "${{github.repository_owner}}",
+              repo: "${{github.repository}}".split('/')[1],
+              tag_name: "v${{ steps.bump-version.outputs.new_version }}",
+              generate_release_notes: true,
+            })
