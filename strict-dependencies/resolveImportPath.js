@@ -7,7 +7,7 @@ const normalize = require('normalize-path')
 /**
  * import文のrootからのパスを求める
  */
-module.exports = (importPath, relativeFilePath) => {
+module.exports = (importPath, relativeFilePath, pathIndexMap) => {
   // { [importAlias: string]: OriginalPath }
   const importAliasMap = {}
 
@@ -19,13 +19,10 @@ module.exports = (importPath, relativeFilePath) => {
     const tsConfig = parseJSON(tsConfigFilePath)
     if (tsConfig.compilerOptions && tsConfig.compilerOptions.paths) {
       Object.keys(tsConfig.compilerOptions.paths).forEach((key) => {
-        if(key === '*'){
-          importAliasMap[key] = ''
-          return
-        }
-
-        // FIXME: このlint ruleではimport先が存在するかチェックしておらず、複数のパスから正しい方を選択できないため[0]固定
-        importAliasMap[key] = tsConfig.compilerOptions.baseUrl ? path.join(tsConfig.compilerOptions.baseUrl, tsConfig.compilerOptions.paths[key][0]) : tsConfig.compilerOptions.paths[key][0]
+        const matchedKey = Object.keys(pathIndexMap).find(k => k === key)
+        const pathIndex = matchedKey ? pathIndexMap[matchedKey] : 0
+        const pathValue = tsConfig.compilerOptions.paths[key][pathIndex] ? tsConfig.compilerOptions.paths[key][pathIndex] : tsConfig.compilerOptions.paths[key][0]
+        importAliasMap[key] = tsConfig.compilerOptions.baseUrl ? path.join(tsConfig.compilerOptions.baseUrl, pathValue) : pathValue
       })
     }
   } catch (e) {

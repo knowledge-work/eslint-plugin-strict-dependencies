@@ -49,6 +49,9 @@ module.exports = {
         properties: {
           resolveRelativeImport: {
             type: 'boolean',
+          },
+          pathIndexMap: {
+            type: 'object'
           }
         },
       },
@@ -58,11 +61,12 @@ module.exports = {
     const dependencies = context.options[0]
     const options = context.options.length > 1 ? context.options[1] : {}
     const resolveRelativeImport = options.resolveRelativeImport
+    const pathIndexMap = options.pathIndexMap ? options.pathIndexMap : {}
 
     function checkImport(node) {
       const fileFullPath = context.getFilename()
       const relativeFilePath = normalize(path.relative(process.cwd(), fileFullPath))
-      const importPath = resolveImportPath(node.source.value, resolveRelativeImport ? relativeFilePath : null)
+      const importPath = resolveImportPath(node.source.value, resolveRelativeImport ? relativeFilePath : null, pathIndexMap)
 
       dependencies
         .filter((dependency) => isMatch(importPath, dependency.module))
