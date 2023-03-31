@@ -31,6 +31,20 @@ npm install eslint-plugin-strict-dependencies --save-dev
      - `resolveRelativeImport = false`: Resolve as `./bbb` (excluded from lint target)
      - `resolveRelativeImport = true`:  Resolve as `src/components/bbb`: (included from lint target)
 
+- pathIndexMap: `object[default = null]`
+  - In eslint-plugin-strict-dependencies, path alias resolution is performed based on the paths specified in the tsconfig.
+  - By default, the value with an index number of `0` is used, but you can specify an option to use a value with any index number.
+  - Specify it as in the following example:
+    - `tsconfig.json`
+      ```json
+      {
+        "compilerOptions": {
+            "*": ["aaa/*", "bbb/*"]
+          },
+      }
+      ```
+    - `pathIndexMap = { "*": 1 } `: `"bbb/*"` is used.
+
 ## Usage
 
 .eslintrc:
@@ -74,6 +88,7 @@ npm install eslint-plugin-strict-dependencies --save-dev
     // options
     // {
     //   "resolveRelativeImport": true
+    //   "pathIndexMap": { "*": 1 }
     // }
   ]
 }
