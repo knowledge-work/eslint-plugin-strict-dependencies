@@ -22,7 +22,7 @@ module.exports = (importPath, relativeFilePath, pathIndexMap) => {
         const matchedKey = Object.keys(pathIndexMap).find(k => k === key)
         // MEMO: pathIndexMapの指定がない場合 or 指定されているindexにアクセスしても値が得られない場合は[0]固定
         const pathIndex = matchedKey ? pathIndexMap[matchedKey] : 0
-        const pathValue = tsConfig.compilerOptions.paths[key][pathIndex] ? tsConfig.compilerOptions.paths[key][pathIndex] : tsConfig.compilerOptions.paths[key][0]
+        const pathValue = tsConfig.compilerOptions.paths[key][pathIndex] ?? tsConfig.compilerOptions.paths[key][0]
         importAliasMap[key] = tsConfig.compilerOptions.baseUrl ? path.join(tsConfig.compilerOptions.baseUrl, pathValue) : pathValue
       })
     }
