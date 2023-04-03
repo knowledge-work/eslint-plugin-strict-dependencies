@@ -200,7 +200,7 @@ describe('create.ImportDeclaration', () => {
 
     checkImport({source: {value: '@/components/ui/Text'}})
 
-    expect(resolveImportPath).toBeCalledWith('@/components/ui/Text', 'src/components/ui/aaa.ts')
+    expect(resolveImportPath).toBeCalledWith('@/components/ui/Text', 'src/components/ui/aaa.ts', {})
     expect(getFilename).toBeCalledTimes(1)
     expect(report).not.toBeCalled()
   })
@@ -219,7 +219,7 @@ describe('create.ImportDeclaration', () => {
 
     checkImport({source: {value: '@/components/ui/Text'}})
 
-    expect(resolveImportPath).toBeCalledWith('@/components/ui/Text', null)
+    expect(resolveImportPath).toBeCalledWith('@/components/ui/Text', null, {})
     expect(getFilename).toBeCalledTimes(1)
     expect(report).not.toBeCalled()
   })
