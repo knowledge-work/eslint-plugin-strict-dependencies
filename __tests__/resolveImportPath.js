@@ -78,4 +78,29 @@ describe('resolveImportPath', () => {
       })
     })
   })
+
+  describe('resolveImportPath with pathIndexMap parameter', () => {
+    const tsConfigWithMultiplePaths = JSON.stringify({
+      compilerOptions: {
+        paths: {
+          '@/components/*': ['src/components/*', 'src/alternativeComponents/*'],
+        },
+      },
+    });
+
+    it('should resolve path alias with specified index in pathIndexMap', () => {
+      readFileSync.mockReturnValue(tsConfigWithMultiplePaths);
+      expect(resolveImportPath('@/components/aaa/bbb', null, { '@/components/*': 1 })).toBe('src/alternativeComponents/aaa/bbb');
+    });
+  
+    it('should resolve path alias with default index:0 if specified index does not exist', () => {
+      readFileSync.mockReturnValue(tsConfigWithMultiplePaths);
+      expect(resolveImportPath('@/components/aaa/bbb', null, { '@/components/*': 5 })).toBe('src/components/aaa/bbb');
+    });
+  
+    it('should resolve path alias with default index:0 if pathIndexMap is an empty object', () => {
+      readFileSync.mockReturnValue(tsConfigWithMultiplePaths);
+      expect(resolveImportPath('@/components/aaa/bbb', null, {})).toBe('src/components/aaa/bbb');
+    });
+  })
 })
