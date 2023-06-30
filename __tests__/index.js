@@ -4,6 +4,57 @@ const resolveImportPath = require('../strict-dependencies/resolveImportPath')
 
 jest.mock('../strict-dependencies/resolveImportPath')
 
+function execCheckImport(checkImport) {
+  checkImport({
+    type: 'ImportDeclaration',
+    start: 72,
+    end: 116,
+    specifiers: [
+      {
+        'type': 'ImportSpecifier',
+        'start': 81,
+        'end': 85,
+        'imported': {
+          'type': 'Identifier',
+          'start': 81,
+          'end': 85,
+          'name': 'Text'
+        },
+        'local': {
+          'type': 'Identifier',
+          'start': 81,
+          'end': 85,
+          'name': 'Text'
+        }
+      },
+      {
+        'type': 'ImportSpecifier',
+        'start': 87,
+        'end': 96,
+        'imported': {
+          'type': 'Identifier',
+          'start': 87,
+          'end': 96,
+          'name': 'TextProps'
+        },
+        'local': {
+          'type': 'Identifier',
+          'start': 87,
+          'end': 96,
+          'name': 'TextProps'
+        }
+      }
+    ],
+    source: {
+      type: 'Literal',
+      start: 93,
+      end: 115,
+      value: '@/components/ui/Text',
+      raw: '"@/components/ui/Text"',
+    },
+  })
+}
+
 describe('create', () => {
   it('should return object', () => {
     const created = create({options: [[]]})
@@ -23,7 +74,7 @@ describe('create.ImportDeclaration', () => {
       report,
     })
 
-    checkImport({source: {value: '@/components/ui/Text'}})
+    execCheckImport(checkImport)
 
     expect(getFilename).toBeCalledTimes(1)
     expect(report).not.toBeCalled()
@@ -44,7 +95,7 @@ describe('create.ImportDeclaration', () => {
       report,
     })
 
-    checkImport({source: {value: '@/components/ui/Tex'}})
+    execCheckImport(checkImport)
 
     expect(getFilename).toBeCalledTimes(1)
     expect(report).not.toBeCalled()
@@ -66,7 +117,7 @@ describe('create.ImportDeclaration', () => {
       report,
     })
 
-    checkImport({source: {value: '@/components/ui/Text'}})
+    execCheckImport(checkImport)
 
     expect(getFilename).toBeCalledTimes(1)
     expect(report).not.toBeCalled()
@@ -88,7 +139,7 @@ describe('create.ImportDeclaration', () => {
       report,
     })
 
-    checkImport({source: {value: '@/components/ui/Text'}})
+    execCheckImport(checkImport)
 
     expect(getFilename).toBeCalledTimes(1)
     expect(report).not.toBeCalled()
@@ -110,7 +161,7 @@ describe('create.ImportDeclaration', () => {
       report,
     })
 
-    checkImport({source: {value: '@/components/ui/Text'}})
+    execCheckImport(checkImport)
 
     expect(getFilename).toBeCalledTimes(1)
     expect(report.mock.calls).toHaveLength(1)
@@ -133,7 +184,7 @@ describe('create.ImportDeclaration', () => {
       report,
     })
 
-    checkImport({source: {value: '@/components/ui/Text'}})
+    execCheckImport(checkImport)
 
     expect(getFilename).toBeCalledTimes(1)
     expect(report.mock.calls).toHaveLength(1)
@@ -156,7 +207,7 @@ describe('create.ImportDeclaration', () => {
       report,
     })
 
-    checkImport({source: {value: '@/components/ui/Text'}})
+    execCheckImport(checkImport)
 
     expect(getFilename).toBeCalledTimes(1)
     expect(report).not.toBeCalled()
@@ -168,7 +219,42 @@ describe('create.ImportDeclaration', () => {
     // dependency.module: src/components/ui, dependency.allowReferenceFrom: ['src/components/pages'], allowSameModule: true
 
     resolveImportPath.mockReturnValue('src/components/ui/Text')
-    const getFilename = jest.fn(() => path.join(process.cwd(), 'src/components/ui/aaa.ts'))
+    const getFilename = jest.fn(() =>
+      path.join(process.cwd(), 'src/components/ui/aaa.ts')
+    )
+    const report = jest.fn()
+    const { ImportDeclaration: checkImport } = create({
+      options: [
+        [
+          {
+            module: 'src/components/ui',
+            allowReferenceFrom: ['src/aaa'],
+            allowSameModule: false,
+          },
+        ],
+      ],
+      getFilename,
+      report,
+    })
+
+    execCheckImport(checkImport)
+
+    expect(getFilename).toBeCalledTimes(1)
+    expect(report.mock.calls).toHaveLength(1)
+    expect(report.mock.calls[0][1]).toBe(
+      'import 'src/components/ui/Text' is not allowed from src/components/ui/aaa.ts.'
+    )
+  })
+
+  it('should report if not allowed specifier from target module', () => {
+    // relativePath: src/components/pages/aaa.ts
+    // importPath: src/components/ui/Text
+    // dependency.module: src/components/ui, dependency.imported: ['Text'], dependency.allowReferenceFrom: ['src/components/pages'], allowSameModule: true
+
+    resolveImportPath.mockReturnValue('src/components/ui/Text')
+    const getFilename = jest.fn(() =>
+      path.join(process.cwd(), 'src/pages/index.tsx')
+    )
     const report = jest.fn()
     const {ImportDeclaration: checkImport} = create({
       options: [
@@ -178,11 +264,42 @@ describe('create.ImportDeclaration', () => {
       report,
     })
 
-    checkImport({source: {value: '@/components/ui/Text'}})
+    execCheckImport(checkImport)
 
     expect(getFilename).toBeCalledTimes(1)
     expect(report.mock.calls).toHaveLength(1)
     expect(report.mock.calls[0][1]).toBe('import \'src/components/ui/Text\' is not allowed from src/components/ui/aaa.ts.')
+  })
+
+  it('should not report if allowed specifier from target module', () => {
+    // relativePath: src/components/pages/aaa.ts
+    // importPath: src/components/ui/Text
+    // dependency.module: src/components/ui, dependency.imported: ['Text'], dependency.allowReferenceFrom: ['src/components/pages'], allowSameModule: true
+
+    resolveImportPath.mockReturnValue('src/components/ui/Text')
+    const getFilename = jest.fn(() =>
+      path.join(process.cwd(), 'src/pages/index.tsx')
+    )
+    const report = jest.fn()
+    const { ImportDeclaration: checkImport } = create({
+      options: [
+        [
+          {
+            module: 'src/components/ui',
+            imported: ['Text'],
+            allowReferenceFrom: ['src/pages'],
+          },
+        ],
+      ],
+      getFilename,
+      report,
+    })
+
+    execCheckImport(checkImport)
+
+    expect(getFilename).toBeCalledTimes(1)
+    expect(report.mock.calls).toHaveLength(1)
+    expect(report).not.toBeCalled()
   })
 
   it('should pass relativeFilePath value to resolveImportPath if resolveRelativeImport is true', () => {
@@ -198,7 +315,7 @@ describe('create.ImportDeclaration', () => {
       report,
     })
 
-    checkImport({source: {value: '@/components/ui/Text'}})
+    execCheckImport(checkImport)
 
     expect(resolveImportPath).toBeCalledWith('@/components/ui/Text', 'src/components/ui/aaa.ts', {})
     expect(getFilename).toBeCalledTimes(1)
@@ -217,7 +334,7 @@ describe('create.ImportDeclaration', () => {
       report,
     })
 
-    checkImport({source: {value: '@/components/ui/Text'}})
+    execCheckImport(checkImport)
 
     expect(resolveImportPath).toBeCalledWith('@/components/ui/Text', null, {})
     expect(getFilename).toBeCalledTimes(1)
