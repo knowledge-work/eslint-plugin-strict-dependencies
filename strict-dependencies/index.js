@@ -67,20 +67,41 @@ module.exports = {
       const fileFullPath = context.getFilename()
       const relativeFilePath = normalize(path.relative(process.cwd(), fileFullPath))
       const importPath = resolveImportPath(node.source.value, resolveRelativeImport ? relativeFilePath : null, pathIndexMap)
+      const importedModules = node.specifiers.map(spec => spec.imported.name)
 
       dependencies
-        .filter((dependency) => isMatch(importPath, dependency.module))
         .forEach((dependency) => {
-          const isAllowed =
-            // 参照元が許可されている
-            dependency.allowReferenceFrom.some((allowPath) =>
-              isMatch(relativeFilePath, allowPath),
-            ) || // または同一モジュール間の参照が許可されている場合
-            (dependency.allowSameModule && isMatch(relativeFilePath, dependency.module))
+          // そもそもmoduleがimportPathと一致していない場合は必ず報告しない
+          if (!isMatch(importPath, dependency.module)) return;
 
-          if (!isAllowed) {
-            context.report(node, `import '${importPath}' is not allowed from ${relativeFilePath}.`)
+          /**
+           * 1. 参照元チェックをしてAllowであればそこで処理を終了する
+           * 2. importedが指定されていれば、importedと実際にimportしているモジュールを比較して含まれていればエラーレポートして処理を終了する
+           * 3. importedが指定されていない場合は、エラー扱いなのでエラーレポートして処理を終了する
+           */
+
+          const isAllowedByPath =
+          // 参照元が許可されている
+          dependency.allowReferenceFrom.some((allowPath) =>
+            isMatch(relativeFilePath, allowPath),
+          ) || // または同一モジュール間の参照が許可されている場合
+          (dependency.allowSameModule && isMatch(relativeFilePath, dependency.module))
+
+          if (isAllowedByPath) return
+
+          // importedされた値・型名もLintのターゲットに入っている場合の検出処理
+          function getCommonElements(arrA, arrB) {
+            return arrA.filter(element => arrB.includes(element));
           }
+          if (dependency.imported && Array.isArray(dependency.imported)) {
+            const commonImportedList = getCommonElements(dependency.imported, importedModules)
+            if (commonImportedList.length > 0) {
+              context.report(node, `import specifier '${commonImportedList.join(',')}' is not allowed from ${relativeFilePath}.`)
+            }
+            return;
+          }
+
+          context.report(node, `import '${importPath}' is not allowed from ${relativeFilePath}.`)
         })
     }
 
