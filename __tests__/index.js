@@ -298,7 +298,7 @@ describe('create.ImportDeclaration', () => {
     expect(report).not.toBeCalled()
   })
 
-  it('should report if allowed specifier from target module', () => {
+  it('should report if not allowed specifier from target module', () => {
     // relativePath: src/components/pages/aaa.ts
     // importPath: src/components/ui/Text
     // dependency.module: src/components/ui, dependency.imported: ['Text'], dependency.allowReferenceFrom: ['src/components/pages'], allowSameModule: true
@@ -327,6 +327,37 @@ describe('create.ImportDeclaration', () => {
     expect(getFilename).toBeCalledTimes(1)
     expect(report.mock.calls).toHaveLength(1)
     expect(report.mock.calls[0][1]).toBe('import specifier \'Text\' is not allowed from src/components/button.tsx.')
+  })
+
+  it('should not report if only allowed specifier from target module', () => {
+    // relativePath: src/components/pages/aaa.ts
+    // importPath: src/components/ui/Text
+    // dependency.module: src/components/ui, dependency.imported: ['Text'], dependency.allowReferenceFrom: ['src/components/pages'], allowSameModule: true
+
+    resolveImportPath.mockReturnValue('src/components/ui/Text')
+    const getFilename = jest.fn(() =>
+      path.join(process.cwd(), 'src/components/button.tsx')
+    )
+    const report = jest.fn()
+    const { ImportDeclaration: checkImport } = create({
+      options: [
+        [
+          {
+            module: 'src/components/ui',
+            imported: ['SomeRestrictedModule'],
+            allowReferenceFrom: ['src/pages'],
+          },
+        ],
+      ],
+      getFilename,
+      report,
+    })
+
+    checkImport(mockImportDeclaration)
+
+    expect(getFilename).toBeCalledTimes(1)
+    expect(report.mock.calls).toHaveLength(0)
+    expect(report).not.toBeCalled();
   })
 
   it('should pass relativeFilePath value to resolveImportPath if resolveRelativeImport is true', () => {
