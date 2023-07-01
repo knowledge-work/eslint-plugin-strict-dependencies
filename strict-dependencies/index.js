@@ -96,7 +96,7 @@ module.exports = {
           if (dependency.imported && Array.isArray(dependency.imported)) {
             const commonImportedList = getCommonElements(dependency.imported, importedModules)
             if (commonImportedList.length > 0) {
-              context.report(node, `import specifier '${commonImportedList.join(',')}' is not allowed from ${relativeFilePath}.`)
+              context.report(node, `import specifier '${commonImportedList.join(', ')}' is not allowed from ${relativeFilePath}.`)
             }
             return;
           }

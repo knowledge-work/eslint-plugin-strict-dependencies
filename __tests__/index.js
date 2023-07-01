@@ -329,6 +329,37 @@ describe('create.ImportDeclaration', () => {
     expect(report.mock.calls[0][1]).toBe('import specifier \'Text\' is not allowed from src/components/button.tsx.')
   })
 
+  it('should report if not allowed multiple specifiers from target module', () => {
+    // relativePath: src/components/pages/aaa.ts
+    // importPath: src/components/ui/Text
+    // dependency.module: src/components/ui, dependency.imported: ['Text'], dependency.allowReferenceFrom: ['src/components/pages'], allowSameModule: true
+
+    resolveImportPath.mockReturnValue('src/components/ui/Text')
+    const getFilename = jest.fn(() =>
+      path.join(process.cwd(), 'src/components/button.tsx')
+    )
+    const report = jest.fn()
+    const { ImportDeclaration: checkImport } = create({
+      options: [
+        [
+          {
+            module: 'src/components/ui',
+            imported: ['Text', 'TextProps'],
+            allowReferenceFrom: ['src/pages'],
+          },
+        ],
+      ],
+      getFilename,
+      report,
+    })
+
+    checkImport(mockImportDeclaration)
+
+    expect(getFilename).toBeCalledTimes(1)
+    expect(report.mock.calls).toHaveLength(1)
+    expect(report.mock.calls[0][1]).toBe('import specifier \'Text, TextProps\' is not allowed from src/components/button.tsx.')
+  })
+
   it('should not report if only allowed specifier from target module', () => {
     // relativePath: src/components/pages/aaa.ts
     // importPath: src/components/ui/Text
