@@ -330,9 +330,9 @@ describe('create.ImportDeclaration', () => {
   })
 
   it('should report if not allowed multiple specifiers from target module', () => {
-    // relativePath: src/components/pages/aaa.ts
+    // relativePath: src/components/button.tsx
     // importPath: src/components/ui/Text
-    // dependency.module: src/components/ui, dependency.importedMembers: ['Text'], dependency.allowReferenceFrom: ['src/components/pages'], allowSameModule: true
+    // dependency.module: src/components/ui, dependency.importedMembers: ['Text', 'TextProps'], dependency.allowReferenceFrom: ['src/pages'], allowSameModule: true
 
     resolveImportPath.mockReturnValue('src/components/ui/Text')
     const getFilename = jest.fn(() =>
@@ -363,7 +363,7 @@ describe('create.ImportDeclaration', () => {
   it('should not report if only allowed specifier from target module', () => {
     // relativePath: src/components/pages/aaa.ts
     // importPath: src/components/ui/Text
-    // dependency.module: src/components/ui, dependency.importedMembers: ['Text'], dependency.allowReferenceFrom: ['src/components/pages'], allowSameModule: true
+    // dependency.module: src/components/ui, dependency.importedMembers: ['SomeRestrictedModule'], dependency.allowReferenceFrom: ['src/pages'], allowSameModule: true
 
     resolveImportPath.mockReturnValue('src/components/ui/Text')
     const getFilename = jest.fn(() =>
