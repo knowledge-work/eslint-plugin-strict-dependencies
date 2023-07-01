@@ -76,8 +76,8 @@ module.exports = {
 
           /**
            * 1. 参照元チェックをしてAllowであればそこで処理を終了する
-           * 2. importedが指定されていれば、importedと実際にimportしているモジュールを比較して含まれていればエラーレポートして処理を終了する
-           * 3. importedが指定されていない場合は、エラー扱いなのでエラーレポートして処理を終了する
+           * 2. importedMembersが指定されていれば、importedMembersと実際にimportしているモジュールを比較して含まれていればエラーレポートして処理を終了する
+           * 3. importedMembersが指定されていない場合は、エラー扱いなのでエラーレポートして処理を終了する
            */
 
           const isAllowedByPath =
@@ -93,8 +93,8 @@ module.exports = {
           function getCommonElements(arrA, arrB) {
             return arrA.filter(element => arrB.includes(element));
           }
-          if (dependency.imported && Array.isArray(dependency.imported)) {
-            const commonImportedList = getCommonElements(dependency.imported, importedModules)
+          if (dependency.importedMembers && Array.isArray(dependency.importedMembers)) {
+            const commonImportedList = getCommonElements(dependency.importedMembers, importedModules)
             if (commonImportedList.length > 0) {
               context.report(node, `import specifier '${commonImportedList.join(', ')}' is not allowed from ${relativeFilePath}.`)
             }
