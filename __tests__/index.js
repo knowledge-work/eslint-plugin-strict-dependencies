@@ -9,7 +9,33 @@ const mockImportDeclaration = {
   start: 72,
   end: 116,
   specifiers: [
+    // specifiersにはImportDefaultSpecifier/ImportNamespaceSpecifier/ImportSpecifierがあり、実際には同時に動くことはないが念のため3つともテストケースに対して用意する
     {
+      // import * as React from 'react'
+      "type": "ImportNamespaceSpecifier",
+      "start": 52,
+      "end": 62,
+      "local": {
+        "type": "Identifier",
+        "start": 57,
+        "end": 62,
+        "name": "React"
+      }
+    },
+    {
+      // import DefaultExport from '@/components/ui/Text';
+      "type": "ImportDefaultSpecifier",
+      "start": 79,
+      "end": 92,
+      "local": {
+        "type": "Identifier",
+        "start": 79,
+        "end": 92,
+        "name": "DefaultExport"
+      }
+    },
+    {
+      // import { Text, TextProps } from '@/components/ui/Text';
       'type': 'ImportSpecifier',
       'start': 81,
       'end': 85,

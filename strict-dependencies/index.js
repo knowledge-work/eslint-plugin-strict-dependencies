@@ -67,7 +67,9 @@ module.exports = {
       const fileFullPath = context.getFilename()
       const relativeFilePath = normalize(path.relative(process.cwd(), fileFullPath))
       const importPath = resolveImportPath(node.source.value, resolveRelativeImport ? relativeFilePath : null, pathIndexMap)
-      const importedModules = node.specifiers.map(spec => spec.imported.name)
+
+      // specにはImportDefaultSpecifier/ImportNamespaceSpecifier/ImportSpecifierがあり、ImportSpecifierの場合はimportedが存在する
+      const importedModules = node.specifiers.filter(spec => 'imported' in spec).map(spec => spec.imported.name)
 
       dependencies
         .forEach((dependency) => {
