@@ -2,6 +2,14 @@ name: Publish
 
 on:
   workflow_dispatch:
+    inputs:
+      versionClass:
+        type: choice
+        required: true
+        options:
+          - 'patch'
+          - 'minor'
+          - 'major'
   schedule:
     - cron: '0 0 15 * *' # at AM 9 JST on day of month 15
 
@@ -28,7 +36,7 @@ jobs:
         run: |
           git config user.name '[bot] github action (${{ github.workflow }})'
           git config user.email 'engineer-team@knowledgework.com'
-          yarn version --patch
+          yarn version --${{ github.event_name == 'schedule' && 'patch' || github.event.inputs.versionClass }}
           echo "new_version=$(jq -r .version package.json)" >> "$GITHUB_OUTPUT"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
