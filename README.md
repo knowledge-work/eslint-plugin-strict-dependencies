@@ -1,6 +1,6 @@
 # eslint-plugin-strict-dependencies
 
-ESlint plugin to define custom module dependency rules.
+ESLint plugin to define custom module dependency rules.
 
 NOTE: `eslint-plugin-strict-dependencies` uses tsconfig, tsconfig.json must be present.
 
@@ -14,7 +14,10 @@ npm install eslint-plugin-strict-dependencies --save-dev
 
 - strict-dependencies
   - module: `string` (Glob or Forward matching string)
-    - target module path
+    - Target module path
+  - targetMembers: `string[]`
+    - Target member name
+    - e.x. `["Suspense"]` in `import { Suspense } from 'react'`
   - allowReferenceFrom: `string[]` (Glob or Forward matching string)
     - Paths of files where target module imports are allowed.
   - allowSameModule: `boolean`
@@ -84,6 +87,17 @@ npm install eslint-plugin-strict-dependencies --save-dev
         "allowReferenceFrom": ["src/libs/router.ts"],
         "allowSameModule": false
       },
+
+      /**
+       * example:
+       * Disallow to import Suspense from react. it should always be imported using `libs/react.ts`.
+       */
+        {
+            "module": "react",
+            "targetMembers": ["Suspense"],
+            "allowReferenceFrom": ["src/libs/react.ts"],
+            "allowSameModule": false
+        },
     ],
     // options
     // {
