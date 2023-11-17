@@ -22,6 +22,9 @@ npm install eslint-plugin-strict-dependencies --save-dev
     - Paths of files where target module imports are allowed.
   - allowSameModule: `boolean`
     - Whether it can be imported by other files in the same directory
+  - allowTypeImport: `boolean`
+    - Whether to allow type imports
+    - e.x. `import type { Suspense } from 'react'`
 
 ### Options
 
@@ -75,7 +78,9 @@ npm install eslint-plugin-strict-dependencies --save-dev
         "module": "src/components/ui",
         "allowReferenceFrom": ["src/components/page"],
         // components/ui can import other components/ui
-        "allowSameModule": true
+        "allowSameModule": true,
+        // components/ui allow type import
+        "allowTypeImport": true
       },
 
       /**
