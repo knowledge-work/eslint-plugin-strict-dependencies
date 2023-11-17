@@ -79,6 +79,11 @@ const mockImportDeclaration = {
   },
 };
 
+const mockImportDeclarationImportKindType = {
+  importKind: 'type',
+  ...mockImportDeclaration
+};
+
 describe('create', () => {
   it('should return object', () => {
     const created = create({options: [[]]})
@@ -452,6 +457,33 @@ describe('create.ImportDeclaration', () => {
     checkImport(mockImportDeclaration)
 
     expect(resolveImportPath).toBeCalledWith('@/components/ui/Text', null, {})
+    expect(getFilename).toBeCalledTimes(1)
+    expect(report).not.toBeCalled()
+  })
+
+  it('should not report if allowTypeImport is true', () => {
+    resolveImportPath.mockReturnValue('src/components/ui/Text')
+    const getFilename = jest.fn(() =>
+      path.join(process.cwd(), 'src/components/ui/aaa.ts')
+    )
+    const report = jest.fn()
+    const { ImportDeclaration: checkImport } = create({
+      options: [
+        [
+          {
+            module: 'src/components/ui',
+            allowReferenceFrom: ['src/aaa'],
+            allowSameModule: false,
+            allowTypeImport: true,
+          },
+        ],
+      ],
+      getFilename,
+      report,
+    })
+
+    checkImport(mockImportDeclarationImportKindType)
+
     expect(getFilename).toBeCalledTimes(1)
     expect(report).not.toBeCalled()
   })
