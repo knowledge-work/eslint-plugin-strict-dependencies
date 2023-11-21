@@ -461,7 +461,7 @@ describe('create.ImportDeclaration', () => {
     expect(report).not.toBeCalled()
   })
 
-  it('should not report if allowTypeImport is true', () => {
+  it('should not report if excludeTypeImportChecks is true', () => {
     resolveImportPath.mockReturnValue('src/components/ui/Text')
     const getFilename = jest.fn(() =>
       path.join(process.cwd(), 'src/pages/index.tsx')
@@ -474,7 +474,7 @@ describe('create.ImportDeclaration', () => {
             module: 'src/components/ui',
             allowReferenceFrom: ['src/aaa'],
             allowSameModule: false,
-            allowTypeImport: true,
+            excludeTypeImportChecks: true,
           },
         ],
       ],
