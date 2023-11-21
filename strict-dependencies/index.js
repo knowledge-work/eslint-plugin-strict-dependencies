@@ -90,8 +90,9 @@ module.exports = {
           dependency.allowReferenceFrom.some((allowPath) =>
             isMatch(relativeFilePath, allowPath),
           ) || // または同一モジュール間の参照が許可されている場合
-          (dependency.allowSameModule && isMatch(relativeFilePath, dependency.module)) ||
-            dependency.allowTypeImport && node.importKind === 'type'
+          (dependency.allowSameModule && isMatch(relativeFilePath, dependency.module))
+          // または明示的に対象外としたtype importである場合
+          || (dependency.allowTypeImport && node.importKind === 'type')
 
           if (isAllowedByPath) return
 
