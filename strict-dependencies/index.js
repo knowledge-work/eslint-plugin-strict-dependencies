@@ -40,6 +40,9 @@ module.exports = {
               allowSameModule: {
                 type: 'boolean',
               },
+              excludeTypeImportChecks: {
+                type: 'boolean'
+              }
             },
           },
         ],
@@ -88,6 +91,8 @@ module.exports = {
             isMatch(relativeFilePath, allowPath),
           ) || // または同一モジュール間の参照が許可されている場合
           (dependency.allowSameModule && isMatch(relativeFilePath, dependency.module))
+          // または明示的に対象外としたtype importである場合
+          || (dependency.excludeTypeImportChecks && node.importKind === 'type')
 
           if (isAllowedByPath) return
 
