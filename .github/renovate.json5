@@ -9,4 +9,5 @@
   ],
   timezone: 'Asia/Tokyo',
   postUpdateOptions: ['yarnDedupeHighest'],
+  minimumReleaseAge: '7 days',
 }
