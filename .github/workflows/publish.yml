@@ -18,8 +18,8 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  id-token: write  # Required for OIDC
-  contents: read
+  id-token: write # Required for OIDC
+  contents: write # create tag and release
 
 jobs:
   publish:
