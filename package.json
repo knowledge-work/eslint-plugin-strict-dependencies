@@ -36,6 +36,6 @@
   "scripts": {
     "test": "jest --coverage",
     "preversion": "echo \"Run check for version $npm_package_version\" && yarn run test",
-    "postversion": "git push --tags && git push origin main && yarn publish ."
+    "publish": "npm publish . && git push origin main && git push --tags"
   }
 }

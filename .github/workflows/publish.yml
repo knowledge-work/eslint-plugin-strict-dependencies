@@ -32,6 +32,11 @@ jobs:
           node-version: '22'
           cache: 'yarn'
           registry-url: 'https://registry.npmjs.org'
+
+      # Trusted publishing requires npm CLI version 11.5.1 or later.
+      - name: Ensure npm >= 11.5.1
+        run: npm i -g npm@^11.5.1
+
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
@@ -41,6 +46,7 @@ jobs:
           git config user.name '[bot] github action (${{ github.workflow }})'
           git config user.email 'engineer-team@knowledgework.com'
           yarn version --${{ github.event_name == 'schedule' && 'patch' || github.event.inputs.versionClass }}
+          yarn run publish
           echo "new_version=$(jq -r .version package.json)" >> "$GITHUB_OUTPUT"
 
       - name: Create release
