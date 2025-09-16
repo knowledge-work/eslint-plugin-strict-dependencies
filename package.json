@@ -36,6 +36,6 @@
   "scripts": {
     "test": "jest --coverage",
     "preversion": "echo \"Run check for version $npm_package_version\" && yarn run test",
-    "publish": "npm publish . && git push origin main && git push --tags"
+    "publish": "npm publish . --access public --registry=https://registry.npmjs.org && git push origin main && git push --tags"
   }
 }
