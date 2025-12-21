@@ -55,7 +55,10 @@ module.exports = {
           },
           pathIndexMap: {
             type: 'object'
-          }
+          },
+          tsconfigPath: {
+            type: 'string',
+          },
         },
       },
     ],
@@ -65,11 +68,17 @@ module.exports = {
     const options = context.options.length > 1 ? context.options[1] : {}
     const resolveRelativeImport = options.resolveRelativeImport
     const pathIndexMap = options.pathIndexMap ? options.pathIndexMap : {}
+    const tsconfigPath = options.tsconfigPath
 
     function checkImport(node) {
       const fileFullPath = context.getFilename()
       const relativeFilePath = normalize(path.relative(process.cwd(), fileFullPath))
-      const importPath = resolveImportPath(node.source.value, resolveRelativeImport ? relativeFilePath : null, pathIndexMap)
+      const importPath = resolveImportPath(
+        node.source.value,
+        resolveRelativeImport ? relativeFilePath : null,
+        pathIndexMap,
+        tsconfigPath
+      )
 
       // specにはImportDefaultSpecifier/ImportNamespaceSpecifier/ImportSpecifierがあり、ImportSpecifierの場合はimportedが存在する
       const importedModules = node.specifiers.filter(spec => 'imported' in spec).map(spec => spec.imported.name)

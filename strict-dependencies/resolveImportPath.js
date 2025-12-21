@@ -7,14 +7,15 @@ const normalize = require('normalize-path')
 /**
  * import文のrootからのパスを求める
  */
-module.exports = (importPath, relativeFilePath, pathIndexMap) => {
+module.exports = (importPath, relativeFilePath, pathIndexMap, tsconfigPath) => {
   // { [importAlias: string]: OriginalPath }
   const importAliasMap = {}
 
   // Load tsconfig option
   // MEMO: tscとか使って簡単に読める方法がありそう
   try {
-    const tsConfigFilePath = path.join(process.cwd(), '/tsconfig.json')
+    const tsConfigFileName = tsconfigPath || 'tsconfig.json'
+    const tsConfigFilePath = path.join(process.cwd(), tsConfigFileName)
     // Exists ts config
     const tsConfig = parseJSON(tsConfigFilePath)
     if (tsConfig.compilerOptions && tsConfig.compilerOptions.paths) {
@@ -35,7 +36,7 @@ module.exports = (importPath, relativeFilePath, pathIndexMap) => {
   }
 
   const absolutePath = Object.keys(importAliasMap).reduce((resolvedImportPath, key) => {
-    // FIXME: use glob module instead of replace('*')
+      // FIXME: use glob module instead of replace('*')
     return resolvedImportPath.replace(key.replace('*', ''), importAliasMap[key].replace('*', ''))
   }, importPath)
 
