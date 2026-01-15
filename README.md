@@ -34,8 +34,8 @@ npm install eslint-plugin-strict-dependencies --save-dev
     ```typescript
     import bbb from './bbb';
     ```
-     - `resolveRelativeImport = false`: Resolve as `./bbb` (excluded from lint target)
-     - `resolveRelativeImport = true`:  Resolve as `src/components/bbb`: (included from lint target)
+    - `resolveRelativeImport = false`: Resolve as `./bbb` (excluded from lint target)
+    - `resolveRelativeImport = true`: Resolve as `src/components/bbb`: (included from lint target)
 
 - pathIndexMap: `object[default = null]`
   - In eslint-plugin-strict-dependencies, path alias resolution is performed based on the paths specified in the tsconfig.
@@ -45,11 +45,16 @@ npm install eslint-plugin-strict-dependencies --save-dev
       ```json
       {
         "compilerOptions": {
-            "*": ["aaa/*", "bbb/*"]
+          "*": ["aaa/*", "bbb/*"]
           },
       }
       ```
     - `pathIndexMap = { "*": 1 } `: `"bbb/*"` is used.
+
+- tsconfigPath: `string[default = "tsconfig.json"]`
+  - Path to the TypeScript configuration file.
+  - By default, `tsconfig.json` is used, but you can specify a custom file name.
+  - e.x. `"tsconfig.app.json"` or `"tsconfig.base.json"`
 
 ## Usage
 
@@ -106,8 +111,9 @@ npm install eslint-plugin-strict-dependencies --save-dev
     ],
     // options
     // {
-    //   "resolveRelativeImport": true
-    //   "pathIndexMap": { "*": 1 }
+    //   "resolveRelativeImport": true,
+    //   "pathIndexMap": { "*": 1 },
+    //   "tsconfigPath": "tsconfig.app.json"
     // }
   ]
 }

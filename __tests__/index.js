@@ -437,7 +437,7 @@ describe('create.ImportDeclaration', () => {
 
     checkImport(mockImportDeclaration)
 
-    expect(resolveImportPath).toBeCalledWith('@/components/ui/Text', 'src/components/ui/aaa.ts', {})
+    expect(resolveImportPath).toBeCalledWith('@/components/ui/Text', 'src/components/ui/aaa.ts', {}, undefined)
     expect(getFilename).toBeCalledTimes(1)
     expect(report).not.toBeCalled()
   })
@@ -456,7 +456,7 @@ describe('create.ImportDeclaration', () => {
 
     checkImport(mockImportDeclaration)
 
-    expect(resolveImportPath).toBeCalledWith('@/components/ui/Text', null, {})
+    expect(resolveImportPath).toBeCalledWith('@/components/ui/Text', null, {}, undefined)
     expect(getFilename).toBeCalledTimes(1)
     expect(report).not.toBeCalled()
   })
