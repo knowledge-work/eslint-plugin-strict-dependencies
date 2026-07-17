@@ -67,7 +67,7 @@ module.exports = {
     const pathIndexMap = options.pathIndexMap ? options.pathIndexMap : {}
 
     function checkImport(node) {
-      const fileFullPath = context.getFilename()
+      const fileFullPath = context.filename ?? context.getFilename()
       const relativeFilePath = normalize(path.relative(process.cwd(), fileFullPath))
       const importPath = resolveImportPath(node.source.value, resolveRelativeImport ? relativeFilePath : null, pathIndexMap)
 
