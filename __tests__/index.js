@@ -109,6 +109,20 @@ describe('create.ImportDeclaration', () => {
     expect(report).not.toBeCalled()
   })
 
+  it('should use context.filename when getFilename is unavailable (ESLint v10)', () => {
+    // ESLint v10 では context.getFilename() が削除され context.filename のみ利用可能
+    resolveImportPath.mockReturnValue('src/components/ui/Text')
+    const report = jest.fn()
+    const {ImportDeclaration: checkImport} = create({
+      options: [[]],
+      filename: path.join(process.cwd(), 'src/components/aaa/bbb.ts'),
+      report,
+    })
+
+    expect(() => checkImport(mockImportDeclaration)).not.toThrow()
+    expect(report).not.toBeCalled()
+  })
+
   it('should do nothing if not matched with importPath', () => {
     // importPath: src/components/ui/Text
     // dependency.module: src/libs

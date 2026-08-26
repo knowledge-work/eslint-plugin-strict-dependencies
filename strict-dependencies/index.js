@@ -67,7 +67,9 @@ module.exports = {
     const pathIndexMap = options.pathIndexMap ? options.pathIndexMap : {}
 
     function checkImport(node) {
-      const fileFullPath = context.getFilename()
+      // ESLint v9以降は context.filename を使用する。context.getFilename() は非推奨で ESLint v10 で削除されたため、
+      // 互換性のため context.filename が無い古いバージョンでは context.getFilename() にフォールバックする
+      const fileFullPath = context.filename ?? context.getFilename()
       const relativeFilePath = normalize(path.relative(process.cwd(), fileFullPath))
       const importPath = resolveImportPath(node.source.value, resolveRelativeImport ? relativeFilePath : null, pathIndexMap)
 
