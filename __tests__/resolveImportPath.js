@@ -79,6 +79,27 @@ describe('resolveImportPath', () => {
     })
   })
 
+  describe('should resolve tsconfig paths without baseUrl', () => {
+    [
+      ['@/components/', './components/', 'components/aaa/bbb'],
+      ['@/components', './components', 'components/aaa/bbb'],
+      ['@/components/*', './components/*', 'components/aaa/bbb'],
+    ].forEach(([target, resolve, expected]) => {
+      it(`${target}: [${resolve}]`, () => {
+        readFileSync.mockReturnValue(JSON.stringify({
+          compilerOptions: {
+            paths: {
+              [target]: [resolve],
+            },
+          },
+        }))
+
+        expect(resolveImportPath('components/aaa/bbb', null, {})).toBe('components/aaa/bbb')
+        expect(resolveImportPath('@/components/aaa/bbb', null, {})).toBe(expected)
+      })
+    })
+  })
+
   describe('resolveImportPath with pathIndexMap parameter', () => {
     const tsConfigWithMultiplePaths = JSON.stringify({
       compilerOptions: {

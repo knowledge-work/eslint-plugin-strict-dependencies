@@ -23,7 +23,8 @@ module.exports = (importPath, relativeFilePath, pathIndexMap) => {
         // MEMO: pathIndexMapの指定がない場合 or 指定されているindexにアクセスしても値が得られない場合は[0]固定
         const pathIndex = matchedKey ? pathIndexMap[matchedKey] : 0
         const pathValue = tsConfig.compilerOptions.paths[key][pathIndex] ? tsConfig.compilerOptions.paths[key][pathIndex] : tsConfig.compilerOptions.paths[key][0]
-        importAliasMap[key] = tsConfig.compilerOptions.baseUrl ? path.join(tsConfig.compilerOptions.baseUrl, pathValue) : pathValue
+        // MEMO: TypeScript 7でbaseUrlが廃止されたため、baseUrl未指定時はtsconfig.jsonの場所(=baseUrl: ".")からの相対パスとして扱う
+        importAliasMap[key] = path.join(tsConfig.compilerOptions.baseUrl || '.', pathValue)
       })
     }
   } catch (e) {
