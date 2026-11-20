@@ -7,7 +7,7 @@ const normalize = require('normalize-path')
 /**
  * import文のrootからのパスを求める
  */
-module.exports = (importPath, relativeFilePath, pathIndexMap) => {
+const resolveImportPath = (importPath, relativeFilePath, pathIndexMap) => {
   // { [importAlias: string]: OriginalPath }
   const importAliasMap = {}
 
@@ -42,3 +42,6 @@ module.exports = (importPath, relativeFilePath, pathIndexMap) => {
 
   return normalize(absolutePath)
 }
+
+// Exported as an object so that tests can replace it with vi.spyOn
+module.exports = { resolveImportPath }

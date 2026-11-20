@@ -1,8 +1,14 @@
 const {create} = require('../strict-dependencies')
 const path = require('path')
-const resolveImportPath = require('../strict-dependencies/resolveImportPath')
+const resolver = require('../strict-dependencies/resolveImportPath')
 
-jest.mock('../strict-dependencies/resolveImportPath')
+let resolveImportPath
+beforeEach(() => {
+  resolveImportPath = vi.spyOn(resolver, 'resolveImportPath')
+})
+afterEach(() => {
+  vi.restoreAllMocks()
+})
 
 const mockImportDeclaration = {
   type: 'ImportDeclaration',
@@ -95,8 +101,8 @@ describe('create', () => {
 describe('create.ImportDeclaration', () => {
   it('should do nothing if no dependencies', () => {
     resolveImportPath.mockReturnValue('src/components/ui/Text')
-    const getFilename = jest.fn(() => path.join(process.cwd(), 'src/components/aaa/bbb.ts'))
-    const report = jest.fn()
+    const getFilename = vi.fn(() => path.join(process.cwd(), 'src/components/aaa/bbb.ts'))
+    const report = vi.fn()
     const {ImportDeclaration: checkImport} = create({
       options: [[]],
       getFilename,
@@ -105,14 +111,14 @@ describe('create.ImportDeclaration', () => {
 
     checkImport(mockImportDeclaration)
 
-    expect(getFilename).toBeCalledTimes(1)
-    expect(report).not.toBeCalled()
+    expect(getFilename).toHaveBeenCalledTimes(1)
+    expect(report).not.toHaveBeenCalled()
   })
 
   it('should use context.filename when getFilename is unavailable (ESLint v10)', () => {
     // ESLint v10 では context.getFilename() が削除され context.filename のみ利用可能
     resolveImportPath.mockReturnValue('src/components/ui/Text')
-    const report = jest.fn()
+    const report = vi.fn()
     const {ImportDeclaration: checkImport} = create({
       options: [[]],
       filename: path.join(process.cwd(), 'src/components/aaa/bbb.ts'),
@@ -120,7 +126,7 @@ describe('create.ImportDeclaration', () => {
     })
 
     expect(() => checkImport(mockImportDeclaration)).not.toThrow()
-    expect(report).not.toBeCalled()
+    expect(report).not.toHaveBeenCalled()
   })
 
   it('should do nothing if not matched with importPath', () => {
@@ -128,8 +134,8 @@ describe('create.ImportDeclaration', () => {
     // dependency.module: src/libs
 
     resolveImportPath.mockReturnValue('src/components/ui/Text')
-    const getFilename = jest.fn(() => path.join(process.cwd(), 'src/components/aaa/bbb.ts'))
-    const report = jest.fn()
+    const getFilename = vi.fn(() => path.join(process.cwd(), 'src/components/aaa/bbb.ts'))
+    const report = vi.fn()
     const {ImportDeclaration: checkImport} = create({
       options: [
         [{module: 'src/libs'}],
@@ -140,8 +146,8 @@ describe('create.ImportDeclaration', () => {
 
     checkImport(mockImportDeclaration)
 
-    expect(getFilename).toBeCalledTimes(1)
-    expect(report).not.toBeCalled()
+    expect(getFilename).toHaveBeenCalledTimes(1)
+    expect(report).not.toHaveBeenCalled()
   })
 
   it('should not report if allowed', () => {
@@ -150,8 +156,8 @@ describe('create.ImportDeclaration', () => {
     // dependency.module: src/components/ui, dependency.allowReferenceFrom: ['src/components/pages'], allowSameModule: true
 
     resolveImportPath.mockReturnValue('src/components/ui/Text')
-    const getFilename = jest.fn(() => path.join(process.cwd(), 'src/components/pages/aaa.ts'))
-    const report = jest.fn()
+    const getFilename = vi.fn(() => path.join(process.cwd(), 'src/components/pages/aaa.ts'))
+    const report = vi.fn()
     const {ImportDeclaration: checkImport} = create({
       options: [
         [{module: 'src/components/ui', allowReferenceFrom: ['src/components/pages'], allowSameModule: true}],
@@ -162,8 +168,8 @@ describe('create.ImportDeclaration', () => {
 
     checkImport(mockImportDeclaration)
 
-    expect(getFilename).toBeCalledTimes(1)
-    expect(report).not.toBeCalled()
+    expect(getFilename).toHaveBeenCalledTimes(1)
+    expect(report).not.toHaveBeenCalled()
   })
 
   it('should not report if allowed with glob pattern', () => {
@@ -172,8 +178,8 @@ describe('create.ImportDeclaration', () => {
     // dependency.module: src/components/ui, dependency.allowReferenceFrom: ['src/components/**/*.ts'], allowSameModule: true
 
     resolveImportPath.mockReturnValue('src/components/ui/Text')
-    const getFilename = jest.fn(() => path.join(process.cwd(), 'src/components/pages/aaa.ts'))
-    const report = jest.fn()
+    const getFilename = vi.fn(() => path.join(process.cwd(), 'src/components/pages/aaa.ts'))
+    const report = vi.fn()
     const {ImportDeclaration: checkImport} = create({
       options: [
         [{module: 'src/components/ui', allowReferenceFrom: ['src/components/**/*.ts'], allowSameModule: true}],
@@ -184,8 +190,8 @@ describe('create.ImportDeclaration', () => {
 
     checkImport(mockImportDeclaration)
 
-    expect(getFilename).toBeCalledTimes(1)
-    expect(report).not.toBeCalled()
+    expect(getFilename).toHaveBeenCalledTimes(1)
+    expect(report).not.toHaveBeenCalled()
   })
 
   it('should report if not allowed', () => {
@@ -194,8 +200,8 @@ describe('create.ImportDeclaration', () => {
     // dependency.module: src/components/ui, dependency.allowReferenceFrom: ['src/components/pages'], allowSameModule: true
 
     resolveImportPath.mockReturnValue('src/components/ui/Text')
-    const getFilename = jest.fn(() => path.join(process.cwd(), 'src/components/test/aaa.ts'))
-    const report = jest.fn()
+    const getFilename = vi.fn(() => path.join(process.cwd(), 'src/components/test/aaa.ts'))
+    const report = vi.fn()
     const {ImportDeclaration: checkImport} = create({
       options: [
         [{module: 'src/components/ui', allowReferenceFrom: ['src/components/pages'], allowSameModule: true}],
@@ -206,7 +212,7 @@ describe('create.ImportDeclaration', () => {
 
     checkImport(mockImportDeclaration)
 
-    expect(getFilename).toBeCalledTimes(1)
+    expect(getFilename).toHaveBeenCalledTimes(1)
     expect(report.mock.calls).toHaveLength(1)
     expect(report.mock.calls[0][1]).toBe('import \'src/components/ui/Text\' is not allowed from src/components/test/aaa.ts.')
   })
@@ -217,8 +223,8 @@ describe('create.ImportDeclaration', () => {
     // dependency.module: src/components/ui, dependency.allowReferenceFrom: ['src/components/**/*.ts'], allowSameModule: true
 
     resolveImportPath.mockReturnValue('src/components/ui/Text')
-    const getFilename = jest.fn(() => path.join(process.cwd(), 'src/components/test/aaa.tsx'))
-    const report = jest.fn()
+    const getFilename = vi.fn(() => path.join(process.cwd(), 'src/components/test/aaa.tsx'))
+    const report = vi.fn()
     const {ImportDeclaration: checkImport} = create({
       options: [
         [{module: 'src/components/ui', allowReferenceFrom: ['src/components/**/*.ts'], allowSameModule: true}],
@@ -229,7 +235,7 @@ describe('create.ImportDeclaration', () => {
 
     checkImport(mockImportDeclaration)
 
-    expect(getFilename).toBeCalledTimes(1)
+    expect(getFilename).toHaveBeenCalledTimes(1)
     expect(report.mock.calls).toHaveLength(1)
     expect(report.mock.calls[0][1]).toBe('import \'src/components/ui/Text\' is not allowed from src/components/test/aaa.tsx.')
   })
@@ -240,8 +246,8 @@ describe('create.ImportDeclaration', () => {
     // dependency.module: src/components/ui, dependency.allowReferenceFrom: ['src/components/pages'], allowSameModule: true
 
     resolveImportPath.mockReturnValue('src/components/ui/Text')
-    const getFilename = jest.fn(() => path.join(process.cwd(), 'src/components/ui/aaa.ts'))
-    const report = jest.fn()
+    const getFilename = vi.fn(() => path.join(process.cwd(), 'src/components/ui/aaa.ts'))
+    const report = vi.fn()
     const {ImportDeclaration: checkImport} = create({
       options: [
         [{module: 'src/components/ui', allowReferenceFrom: ['src/aaa'], allowSameModule: true}],
@@ -252,8 +258,8 @@ describe('create.ImportDeclaration', () => {
 
     checkImport(mockImportDeclaration)
 
-    expect(getFilename).toBeCalledTimes(1)
-    expect(report).not.toBeCalled()
+    expect(getFilename).toHaveBeenCalledTimes(1)
+    expect(report).not.toHaveBeenCalled()
   })
 
   it('should report if not allowed from same module', () => {
@@ -262,10 +268,10 @@ describe('create.ImportDeclaration', () => {
     // dependency.module: src/components/ui, dependency.allowReferenceFrom: ['src/components/pages'], allowSameModule: true
 
     resolveImportPath.mockReturnValue('src/components/ui/Text')
-    const getFilename = jest.fn(() =>
+    const getFilename = vi.fn(() =>
       path.join(process.cwd(), 'src/components/ui/aaa.ts')
     )
-    const report = jest.fn()
+    const report = vi.fn()
     const { ImportDeclaration: checkImport } = create({
       options: [
         [
@@ -282,7 +288,7 @@ describe('create.ImportDeclaration', () => {
 
     checkImport(mockImportDeclaration)
 
-    expect(getFilename).toBeCalledTimes(1)
+    expect(getFilename).toHaveBeenCalledTimes(1)
     expect(report.mock.calls).toHaveLength(1)
     expect(report.mock.calls[0][1]).toBe('import \'src/components/ui/Text\' is not allowed from src/components/ui/aaa.ts.')
   })
@@ -293,10 +299,10 @@ describe('create.ImportDeclaration', () => {
     // dependency.module: src/components/ui, dependency.targetMembers: ['Text'], dependency.allowReferenceFrom: ['src/components/pages'], allowSameModule: true
 
     resolveImportPath.mockReturnValue('src/components/ui/Text')
-    const getFilename = jest.fn(() =>
+    const getFilename = vi.fn(() =>
       path.join(process.cwd(), 'src/pages/index.tsx')
     )
-    const report = jest.fn()
+    const report = vi.fn()
     const {ImportDeclaration: checkImport} = create({
       options: [
         [{module: 'src/components/ui', allowReferenceFrom: ['src/aaa'], allowSameModule: false}],
@@ -307,7 +313,7 @@ describe('create.ImportDeclaration', () => {
 
     checkImport(mockImportDeclaration)
 
-    expect(getFilename).toBeCalledTimes(1)
+    expect(getFilename).toHaveBeenCalledTimes(1)
     expect(report.mock.calls).toHaveLength(1)
     expect(report.mock.calls[0][1]).toBe('import \'src/components/ui/Text\' is not allowed from src/pages/index.tsx.')
   })
@@ -318,10 +324,10 @@ describe('create.ImportDeclaration', () => {
     // dependency.module: src/components/ui, dependency.targetMembers: ['Text'], dependency.allowReferenceFrom: ['src/components/pages'], allowSameModule: true
 
     resolveImportPath.mockReturnValue('src/components/ui/Text')
-    const getFilename = jest.fn(() =>
+    const getFilename = vi.fn(() =>
       path.join(process.cwd(), 'src/pages/index.tsx')
     )
-    const report = jest.fn()
+    const report = vi.fn()
     const { ImportDeclaration: checkImport } = create({
       options: [
         [
@@ -338,9 +344,9 @@ describe('create.ImportDeclaration', () => {
 
     checkImport(mockImportDeclaration)
 
-    expect(getFilename).toBeCalledTimes(1)
+    expect(getFilename).toHaveBeenCalledTimes(1)
     expect(report.mock.calls).toHaveLength(0)
-    expect(report).not.toBeCalled()
+    expect(report).not.toHaveBeenCalled()
   })
 
   it('should report if not allowed specifier from target module', () => {
@@ -349,10 +355,10 @@ describe('create.ImportDeclaration', () => {
     // dependency.module: src/components/ui, dependency.targetMembers: ['Text'], dependency.allowReferenceFrom: ['src/components/pages'], allowSameModule: true
 
     resolveImportPath.mockReturnValue('src/components/ui/Text')
-    const getFilename = jest.fn(() =>
+    const getFilename = vi.fn(() =>
       path.join(process.cwd(), 'src/components/button.tsx')
     )
-    const report = jest.fn()
+    const report = vi.fn()
     const { ImportDeclaration: checkImport } = create({
       options: [
         [
@@ -369,7 +375,7 @@ describe('create.ImportDeclaration', () => {
 
     checkImport(mockImportDeclaration)
 
-    expect(getFilename).toBeCalledTimes(1)
+    expect(getFilename).toHaveBeenCalledTimes(1)
     expect(report.mock.calls).toHaveLength(1)
     expect(report.mock.calls[0][1]).toBe('import specifier \'Text\' is not allowed from src/components/button.tsx.')
   })
@@ -380,10 +386,10 @@ describe('create.ImportDeclaration', () => {
     // dependency.module: src/components/ui, dependency.targetMembers: ['Text', 'TextProps'], dependency.allowReferenceFrom: ['src/pages'], allowSameModule: true
 
     resolveImportPath.mockReturnValue('src/components/ui/Text')
-    const getFilename = jest.fn(() =>
+    const getFilename = vi.fn(() =>
       path.join(process.cwd(), 'src/components/button.tsx')
     )
-    const report = jest.fn()
+    const report = vi.fn()
     const { ImportDeclaration: checkImport } = create({
       options: [
         [
@@ -400,7 +406,7 @@ describe('create.ImportDeclaration', () => {
 
     checkImport(mockImportDeclaration)
 
-    expect(getFilename).toBeCalledTimes(1)
+    expect(getFilename).toHaveBeenCalledTimes(1)
     expect(report.mock.calls).toHaveLength(1)
     expect(report.mock.calls[0][1]).toBe('import specifier \'Text, TextProps\' is not allowed from src/components/button.tsx.')
   })
@@ -411,10 +417,10 @@ describe('create.ImportDeclaration', () => {
     // dependency.module: src/components/ui, dependency.targetMembers: ['SomeRestrictedModule'], dependency.allowReferenceFrom: ['src/pages'], allowSameModule: true
 
     resolveImportPath.mockReturnValue('src/components/ui/Text')
-    const getFilename = jest.fn(() =>
+    const getFilename = vi.fn(() =>
       path.join(process.cwd(), 'src/components/button.tsx')
     )
-    const report = jest.fn()
+    const report = vi.fn()
     const { ImportDeclaration: checkImport } = create({
       options: [
         [
@@ -431,15 +437,15 @@ describe('create.ImportDeclaration', () => {
 
     checkImport(mockImportDeclaration)
 
-    expect(getFilename).toBeCalledTimes(1)
+    expect(getFilename).toHaveBeenCalledTimes(1)
     expect(report.mock.calls).toHaveLength(0)
-    expect(report).not.toBeCalled();
+    expect(report).not.toHaveBeenCalled();
   })
 
   it('should pass relativeFilePath value to resolveImportPath if resolveRelativeImport is true', () => {
     resolveImportPath.mockReturnValue('src/components/ui/Text')
-    const getFilename = jest.fn(() => path.join(process.cwd(), 'src/components/ui/aaa.ts'))
-    const report = jest.fn()
+    const getFilename = vi.fn(() => path.join(process.cwd(), 'src/components/ui/aaa.ts'))
+    const report = vi.fn()
     const {ImportDeclaration: checkImport} = create({
       options: [
         [{module: 'src/components/ui', allowReferenceFrom: ['src/aaa'], allowSameModule: true}],
@@ -451,15 +457,15 @@ describe('create.ImportDeclaration', () => {
 
     checkImport(mockImportDeclaration)
 
-    expect(resolveImportPath).toBeCalledWith('@/components/ui/Text', 'src/components/ui/aaa.ts', {})
-    expect(getFilename).toBeCalledTimes(1)
-    expect(report).not.toBeCalled()
+    expect(resolveImportPath).toHaveBeenCalledWith('@/components/ui/Text', 'src/components/ui/aaa.ts', {})
+    expect(getFilename).toHaveBeenCalledTimes(1)
+    expect(report).not.toHaveBeenCalled()
   })
 
   it('should pass empty relativeFilePath value to resolveImportPath if resolveRelativeImport is falsy', () => {
     resolveImportPath.mockReturnValue('../components/ui/Text')
-    const getFilename = jest.fn(() => path.join(process.cwd(), 'src/components/ui/aaa.ts'))
-    const report = jest.fn()
+    const getFilename = vi.fn(() => path.join(process.cwd(), 'src/components/ui/aaa.ts'))
+    const report = vi.fn()
     const {ImportDeclaration: checkImport} = create({
       options: [
         [{module: 'src/components/ui', allowReferenceFrom: ['src/aaa'], allowSameModule: true}],
@@ -470,17 +476,17 @@ describe('create.ImportDeclaration', () => {
 
     checkImport(mockImportDeclaration)
 
-    expect(resolveImportPath).toBeCalledWith('@/components/ui/Text', null, {})
-    expect(getFilename).toBeCalledTimes(1)
-    expect(report).not.toBeCalled()
+    expect(resolveImportPath).toHaveBeenCalledWith('@/components/ui/Text', null, {})
+    expect(getFilename).toHaveBeenCalledTimes(1)
+    expect(report).not.toHaveBeenCalled()
   })
 
   it('should not report if excludeTypeImportChecks is true', () => {
     resolveImportPath.mockReturnValue('src/components/ui/Text')
-    const getFilename = jest.fn(() =>
+    const getFilename = vi.fn(() =>
       path.join(process.cwd(), 'src/pages/index.tsx')
     )
-    const report = jest.fn()
+    const report = vi.fn()
     const { ImportDeclaration: checkImport } = create({
       options: [
         [
@@ -498,7 +504,7 @@ describe('create.ImportDeclaration', () => {
 
     checkImport(mockImportDeclarationImportKindType)
 
-    expect(getFilename).toBeCalledTimes(1)
-    expect(report).not.toBeCalled()
+    expect(getFilename).toHaveBeenCalledTimes(1)
+    expect(report).not.toHaveBeenCalled()
   })
 })

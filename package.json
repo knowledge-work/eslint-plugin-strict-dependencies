@@ -31,10 +31,11 @@
     "require-strip-json-comments": "2.0.0"
   },
   "devDependencies": {
-    "jest": "29.7.0"
+    "@vitest/coverage-v8": "5.1.0",
+    "vitest": "5.1.0"
   },
   "scripts": {
-    "test": "jest --coverage",
+    "test": "vitest run --coverage",
     "preversion": "echo \"Run check for version $npm_package_version\" && pnpm test",
     "publish": "git push origin main && git push --tags && npm publish . --access public --registry=https://registry.npmjs.org"
   },
