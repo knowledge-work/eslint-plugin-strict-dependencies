@@ -31,16 +31,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      # pnpm version comes from `packageManager`, and Node.js from `devEngines.runtime` in package.json.
+      # No dependency cache in this job.
       - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
-      # No registry-url: trusted publishing does not use a token, and an .npmrc with
-      # an unset ${NODE_AUTH_TOKEN} breaks the install. No dependency cache in this job.
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
-        with:
-          node-version: "26"
-
-      # Trusted publishing requires npm CLI 11.5.1 or later.
-      - name: Install npm
-        run: npm install --global npm@11.21.2
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -52,7 +45,7 @@ jobs:
         run: |
           git config user.name '[bot] github action (${{ github.workflow }})'
           git config user.email 'engineer-team@knowledgework.com'
-          npm version "$VERSION_CLASS" -m "v%s"
+          pnpm version "$VERSION_CLASS" -m "v%s"
           pnpm run release
           echo "new_version=$(jq -r .version package.json)" >> "$GITHUB_OUTPUT"
 
