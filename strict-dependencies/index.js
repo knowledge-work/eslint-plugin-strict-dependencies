@@ -5,7 +5,7 @@ const mm = require('micromatch')
 const isGlob = require('is-glob')
 const normalize = require('normalize-path')
 
-const resolveImportPath = require('./resolveImportPath')
+const resolver = require('./resolveImportPath')
 
 /**
  * pathのmatcher。
@@ -71,7 +71,7 @@ module.exports = {
       // 互換性のため context.filename が無い古いバージョンでは context.getFilename() にフォールバックする
       const fileFullPath = context.filename ?? context.getFilename()
       const relativeFilePath = normalize(path.relative(process.cwd(), fileFullPath))
-      const importPath = resolveImportPath(node.source.value, resolveRelativeImport ? relativeFilePath : null, pathIndexMap)
+      const importPath = resolver.resolveImportPath(node.source.value, resolveRelativeImport ? relativeFilePath : null, pathIndexMap)
 
       // specにはImportDefaultSpecifier/ImportNamespaceSpecifier/ImportSpecifierがあり、ImportSpecifierの場合はimportedが存在する
       const importedModules = node.specifiers.filter(spec => 'imported' in spec).map(spec => spec.imported.name)

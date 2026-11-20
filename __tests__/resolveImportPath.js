@@ -1,7 +1,13 @@
-const resolveImportPath = require('../strict-dependencies/resolveImportPath')
-const {readFileSync} = require('fs')
+const {resolveImportPath} = require('../strict-dependencies/resolveImportPath')
+const fs = require('fs')
 
-jest.mock('fs')
+let readFileSync
+beforeEach(() => {
+  readFileSync = vi.spyOn(fs, 'readFileSync')
+})
+afterEach(() => {
+  vi.restoreAllMocks()
+})
 
 describe('resolveImportPath', () => {
   it('should resolve relative path', () => {
