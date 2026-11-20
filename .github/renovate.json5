@@ -8,6 +8,6 @@
     'helpers:pinGitHubActionDigests',
   ],
   timezone: 'Asia/Tokyo',
-  postUpdateOptions: ['yarnDedupeHighest'],
+  postUpdateOptions: ['pnpmDedupe'],
   minimumReleaseAge: '7 days',
 }

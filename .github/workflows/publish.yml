@@ -26,11 +26,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
           node-version: '26'
-          cache: 'yarn'
+          cache: 'pnpm'
           registry-url: 'https://registry.npmjs.org'
 
       # Trusted publishing requires npm CLI version 11.5.1 or later.
@@ -38,15 +39,15 @@ jobs:
         run: npm i -g npm@^11.5.1
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Bump version and publish
         id: bump-version
         run: |
           git config user.name '[bot] github action (${{ github.workflow }})'
           git config user.email 'engineer-team@knowledgework.com'
-          yarn version --${{ github.event_name == 'schedule' && 'patch' || github.event.inputs.versionClass }}
-          yarn run publish
+          npm version ${{ github.event_name == 'schedule' && 'patch' || github.event.inputs.versionClass }} -m "v%s"
+          pnpm run publish
           echo "new_version=$(jq -r .version package.json)" >> "$GITHUB_OUTPUT"
 
       - name: Create release
