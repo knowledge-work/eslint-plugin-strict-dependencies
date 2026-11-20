@@ -1,8 +1,15 @@
 /* eslint-disable */
 
+const fs = require('fs')
 const path = require('path')
-const parseJSON = require('require-strip-json-comments')
-const normalize = require('normalize-path')
+
+const { normalizePath, stripJsonComments } = require('./utils')
+
+/**
+ * Read a JSON file that may contain comments (such as tsconfig.json)
+ */
+const readJsonWithComments = (filePath) =>
+  JSON.parse(stripJsonComments(fs.readFileSync(filePath, 'utf8').replace(/^﻿/, '')))
 
 /**
  * import文のrootからのパスを求める
@@ -16,7 +23,7 @@ const resolveImportPath = (importPath, relativeFilePath, pathIndexMap) => {
   try {
     const tsConfigFilePath = path.join(process.cwd(), '/tsconfig.json')
     // Exists ts config
-    const tsConfig = parseJSON(tsConfigFilePath)
+    const tsConfig = readJsonWithComments(tsConfigFilePath)
     if (tsConfig.compilerOptions && tsConfig.compilerOptions.paths) {
       Object.keys(tsConfig.compilerOptions.paths).forEach((key) => {
         const matchedKey = Object.keys(pathIndexMap).find(k => k === key)
@@ -40,7 +47,7 @@ const resolveImportPath = (importPath, relativeFilePath, pathIndexMap) => {
     return resolvedImportPath.replace(key.replace('*', ''), importAliasMap[key].replace('*', ''))
   }, importPath)
 
-  return normalize(absolutePath)
+  return normalizePath(absolutePath)
 }
 
 // Exported as an object so that tests can replace it with vi.spyOn

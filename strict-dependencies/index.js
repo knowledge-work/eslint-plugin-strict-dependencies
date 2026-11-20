@@ -1,20 +1,9 @@
 /* eslint-disable */
 
 const path = require('path')
-const mm = require('micromatch')
-const isGlob = require('is-glob')
-const normalize = require('normalize-path')
 
 const resolver = require('./resolveImportPath')
-
-/**
- * pathのmatcher。
- * eslintrcで設定できる値は以下のケースを扱う
- * - globパターン指定
- * - globパターン以外の場合 => 前方部分一致
- */
-const isMatch = (str, pattern) =>
-  isGlob(pattern) ? mm.isMatch(str, pattern) : str.startsWith(pattern)
+const { isMatch, normalizePath } = require('./utils')
 
 module.exports = {
   meta: {
@@ -70,7 +59,7 @@ module.exports = {
       // ESLint v9以降は context.filename を使用する。context.getFilename() は非推奨で ESLint v10 で削除されたため、
       // 互換性のため context.filename が無い古いバージョンでは context.getFilename() にフォールバックする
       const fileFullPath = context.filename ?? context.getFilename()
-      const relativeFilePath = normalize(path.relative(process.cwd(), fileFullPath))
+      const relativeFilePath = normalizePath(path.relative(process.cwd(), fileFullPath))
       const importPath = resolver.resolveImportPath(node.source.value, resolveRelativeImport ? relativeFilePath : null, pathIndexMap)
 
       // specにはImportDefaultSpecifier/ImportNamespaceSpecifier/ImportSpecifierがあり、ImportSpecifierの場合はimportedが存在する
