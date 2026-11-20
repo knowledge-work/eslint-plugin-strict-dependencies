@@ -31,6 +31,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          # Check out the latest main when the job starts (after approval), not the commit at dispatch time
+          ref: main
       # pnpm version comes from `packageManager`, and Node.js from `devEngines.runtime` in package.json.
       # No dependency cache in this job.
       - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
