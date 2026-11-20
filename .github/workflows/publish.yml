@@ -6,58 +6,65 @@ on:
       versionClass:
         type: choice
         required: true
+        default: patch
         options:
-          - 'patch'
-          - 'minor'
-          - 'major'
+          - patch
+          - minor
+          - major
   schedule:
-    - cron: '0 0 15 * *' # at AM 9 JST on day of month 15
+    - cron: "0 0 15 * *" # at AM 9 JST on day of month 15
 
 concurrency:
   group: ${{ github.workflow }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
-permissions:
-  id-token: write # Required for OIDC
-  contents: write # create tag and release
+permissions: {}
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    # Requires approval before publishing (see the repository's environment settings)
+    environment: npm
+    permissions:
+      id-token: write # Required for trusted publishing (OIDC)
+      contents: write # Push the version commit and tag, and create the release
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+      # No registry-url: trusted publishing does not use a token, and an .npmrc with
+      # an unset ${NODE_AUTH_TOKEN} breaks the install. No dependency cache in this job.
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
-          node-version: '26'
-          cache: 'pnpm'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: "26"
 
-      # Trusted publishing requires npm CLI version 11.5.1 or later.
-      - name: Ensure npm >= 11.5.1
-        run: npm i -g npm@^11.5.1
+      # Trusted publishing requires npm CLI 11.5.1 or later.
+      - name: Install npm
+        run: npm install --global npm@11.21.2
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Bump version and publish
         id: bump-version
+        env:
+          VERSION_CLASS: ${{ github.event_name == 'schedule' && 'patch' || inputs.versionClass }}
         run: |
           git config user.name '[bot] github action (${{ github.workflow }})'
           git config user.email 'engineer-team@knowledgework.com'
-          npm version ${{ github.event_name == 'schedule' && 'patch' || github.event.inputs.versionClass }} -m "v%s"
-          pnpm run publish
+          npm version "$VERSION_CLASS" -m "v%s"
+          pnpm run release
           echo "new_version=$(jq -r .version package.json)" >> "$GITHUB_OUTPUT"
 
       - name: Create release
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+        env:
+          NEW_VERSION: ${{ steps.bump-version.outputs.new_version }}
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             await github.rest.repos.createRelease({
-              owner: "${{github.repository_owner}}",
-              repo: "${{github.repository}}".split('/')[1],
-              tag_name: "v${{ steps.bump-version.outputs.new_version }}",
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: `v${process.env.NEW_VERSION}`,
               generate_release_notes: true,
             })
