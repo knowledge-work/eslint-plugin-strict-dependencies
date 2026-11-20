@@ -35,7 +35,8 @@
   },
   "scripts": {
     "test": "jest --coverage",
-    "preversion": "echo \"Run check for version $npm_package_version\" && yarn run test",
+    "preversion": "echo \"Run check for version $npm_package_version\" && pnpm test",
     "publish": "git push origin main && git push --tags && npm publish . --access public --registry=https://registry.npmjs.org"
-  }
+  },
+  "packageManager": "pnpm@12.16.1"
 }
