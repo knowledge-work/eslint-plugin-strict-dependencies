@@ -34,7 +34,14 @@
   "scripts": {
     "test": "vitest run --coverage",
     "preversion": "echo \"Run check for version $npm_package_version\" && pnpm test",
-    "publish": "git push origin main && git push --tags && npm publish . --access public --registry=https://registry.npmjs.org"
+    "release": "pnpm publish --access public --provenance && git push --follow-tags origin main"
   },
-  "packageManager": "pnpm@12.16.1"
+  "packageManager": "pnpm@12.20.0+sha512.6ccc74997ccef4e67999788e18dbfbfa583e2a849668668db4707b6a8306662f47156e650232a985bd3ec24cf9364c1aa154d37e51ed7aac62c1cd1e3afc80c3",
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "26.13.1",
+      "onFail": "download"
+    }
+  }
 }
